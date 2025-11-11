@@ -17,6 +17,7 @@ import (
 	"k8s.io/utils/ptr"
 	kubevirt "kubevirt.io/api/core"
 	kubevirtv1 "kubevirt.io/api/core/v1"
+	metrics2 "kubevirt.io/ssp-operator/internal/metrics"
 
 	"kubevirt.io/ssp-operator/internal/common"
 	"kubevirt.io/ssp-operator/internal/env"
@@ -39,7 +40,6 @@ const (
 	WebhookName                   = VirtTemplateValidator
 	ServiceAccountName            = "template-validator"
 	ServiceName                   = VirtTemplateValidator
-	MetricsServiceName            = "template-validator-metrics"
 	DeploymentName                = VirtTemplateValidator
 	ConfigMapName                 = VirtTemplateValidator
 	PrometheusLabel               = "prometheus.ssp.kubevirt.io"
@@ -372,7 +372,7 @@ func newValidatingWebhook(serviceNamespace string) *admission.ValidatingWebhookC
 func PrometheusServiceLabels() map[string]string {
 	return map[string]string{
 		metrics.PrometheusLabelKey: metrics.PrometheusLabelValue,
-		metrics.MetricsServiceKey:  MetricsServiceName,
+		metrics.MetricsServiceKey:  metrics2.TemplateValidatorMetricsServiceName,
 	}
 }
 
@@ -380,7 +380,7 @@ func newPrometheusService(namespace string) *core.Service {
 	return &core.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: namespace,
-			Name:      MetricsServiceName,
+			Name:      metrics2.TemplateValidatorMetricsServiceName,
 			Labels:    PrometheusServiceLabels(),
 		},
 		Spec: core.ServiceSpec{

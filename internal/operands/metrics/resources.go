@@ -8,6 +8,8 @@ import (
 	rbac "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
+
+	metrics2 "kubevirt.io/ssp-operator/internal/metrics"
 	"kubevirt.io/ssp-operator/internal/common"
 	"kubevirt.io/ssp-operator/pkg/monitoring/rules"
 )
@@ -22,13 +24,12 @@ const (
 	PrometheusServiceAccountName = "prometheus-k8s"
 	MetricsPortName              = "http-metrics"
 
-	TemplateValidatorMetricsServiceName = "template-validator-metrics"
-	MetricsServiceName                  = "ssp-operator-metrics"
-	MetricsServiceKey                   = "metrics.ssp.kubevirt.io"
-	ServiceCABundle                     = "openshift-service-ca.crt"
-	ServiceCABUndleKey                  = "service-ca.crt"
-	OLMManagedCert                      = "ssp-operator-service-cert"
-	OLMManagedCertKey                   = "olmCAKey"
+	MetricsServiceName = "ssp-operator-metrics"
+	MetricsServiceKey  = "metrics.ssp.kubevirt.io"
+	ServiceCABundle    = "openshift-service-ca.crt"
+	ServiceCABUndleKey = "service-ca.crt"
+	OLMManagedCert     = "ssp-operator-service-cert"
+	OLMManagedCertKey  = "olmCAKey"
 )
 
 func newMonitoringClusterRole() *rbac.ClusterRole {
@@ -109,9 +110,9 @@ func newValidatorServiceMonitor(request common.Request) *promv1.ServiceMonitor {
 	}
 	tlsConfig.ServerName = ptr.To(fmt.Sprintf("virt-template-validator.%s.svc", request.Namespace))
 
-	serviceMonitor := newServiceMonitor(TemplateValidatorMetricsServiceName, request.Namespace, tlsConfig, metav1.LabelSelector{
+	serviceMonitor := newServiceMonitor(metrics2.TemplateValidatorMetricsServiceName, request.Namespace, tlsConfig, metav1.LabelSelector{
 		MatchLabels: map[string]string{
-			MetricsServiceKey: TemplateValidatorMetricsServiceName,
+			MetricsServiceKey: metrics2.TemplateValidatorMetricsServiceName,
 		},
 	})
 	return &serviceMonitor

@@ -32,6 +32,7 @@ import (
 
 	ssp "kubevirt.io/ssp-operator/api/v1beta3"
 	"kubevirt.io/ssp-operator/internal/common"
+	"kubevirt.io/ssp-operator/internal/metrics"
 	validator "kubevirt.io/ssp-operator/internal/operands/template-validator"
 	"kubevirt.io/ssp-operator/internal/template-validator/labels"
 	"kubevirt.io/ssp-operator/tests/decorators"
@@ -155,7 +156,7 @@ var _ = Describe("Template validator operand", func() {
 			},
 		}
 		serviceMetricsRes = testResource{
-			Name:           validator.MetricsServiceName,
+			Name:           metrics.TemplateValidatorMetricsServiceName,
 			Namespace:      strategy.GetNamespace(),
 			Resource:       &core.Service{},
 			ExpectedLabels: validator.PrometheusServiceLabels(),
